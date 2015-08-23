@@ -44,6 +44,7 @@ class Translator implements TranslatorInterface
     public function translate($text, $source, $target, $all = false)
     {
         try {
+            $text = urlencode($text);
             $url = sprintf($this->endpoint, $this->apiKey, $text, $source, $target);
             $response = $this->client->get($url);
             $body = (string) $response->getBody();

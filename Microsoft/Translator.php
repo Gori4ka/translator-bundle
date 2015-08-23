@@ -66,10 +66,11 @@ class Translator implements TranslatorInterface
      * @param $source
      * @param $target
      * @param bool $all
-     * @return array|mixed
+     * @return array|string
      */
     public function translate($text, $source, $target, $all = false)
     {
+        $text = urlencode($text);
         $url = sprintf($this->translateEndpoint, $text, $source, $target);
         $response = $this->getResponse($url);
         $response = (array) simplexml_load_string($response);
@@ -88,6 +89,7 @@ class Translator implements TranslatorInterface
      */
     public function speak($text, $language)
     {
+        $text = urlencode($text);
         $url = sprintf($this->speakEndpoint, $text, $language);
         $response = $this->getResponse($url);
 
@@ -97,17 +99,29 @@ class Translator implements TranslatorInterface
     /**
      * @param $url
      * @return string
+     * @throws InvalidTranslationException
      */
     private function getResponse($url)
     {
-        $response = $this->client->get($url, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Content-Type' => 'text/xml'
-            ]
-        ]);
+        try {
+            $response = $this->client->get($url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Content-Type' => 'text/xml'
+                ]
+            ]);
 
-        return (string) $response->getBody();
+            return (string) $response->getBody();
+        } catch (ClientException $e) {
+            $body = (string) $e->getResponse()->getBody();
+            $error = json_decode($body, true);
+
+            throw new InvalidTranslationException(
+                'Microsoft: ' . $error['error_description'],
+                $e->getResponse()->getStatusCode(),
+                $e
+            );
+        }
     }
 
     /**
