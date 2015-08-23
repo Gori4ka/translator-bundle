@@ -4,6 +4,12 @@ Translate any text via google, microsoft, yandex translate api.
 
 ## Installation
 
+Add to `composer.json`:
+
+```
+"develoid/translator-bundle": "dev-master"
+```
+
 Add bundle to `app/AppKernel.php`
 
 ```php
