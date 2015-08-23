@@ -9,7 +9,7 @@ interface TranslatorInterface
      * @param $source
      * @param $target
      * @param bool $all
-     * @return string|array|null
+     * @return string|array
      */
     public function translate($text, $source, $target, $all = false);
 }

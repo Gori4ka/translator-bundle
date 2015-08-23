@@ -2,9 +2,10 @@
 
 namespace Develoid\TranslatorBundle;
 
+use Develoid\TranslatorBundle\Model\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class Translator
+class Translator implements TranslatorInterface
 {
     /**
      * @var TranslatorInterface
@@ -24,10 +25,11 @@ class Translator
      * @param $text
      * @param $source
      * @param $target
-     * @return string
+     * @param bool $all
+     * @return array|string
      */
-    public function translate($text, $source, $target)
+    public function translate($text, $source, $target, $all = false)
     {
-        return $this->translator->translate($text, $source, $target);
+        return $this->translator->translate($text, $source, $target, $all);
     }
 }
