@@ -1,0 +1,21 @@
+{
+  "name": "develoid/translator-bundle",
+  "license": "MIT",
+  "type": "symfony-bundle",
+  "keywords": ["google translator", "microsoft translator", "yandex translator"],
+  "authors": [
+    {
+      "name": "Pavel Salauyou",
+      "email": "pavel.salauyou@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Develoid\\TranslatorBundle\\": ""
+    }
+  },
+  "require": {
+    "php": ">=5.4",
+
+  }
+}
