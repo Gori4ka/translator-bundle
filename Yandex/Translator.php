@@ -36,7 +36,7 @@ class Translator implements TranslatorInterface
 
             return (string) $translation;
         } catch (\Exception $e) {
-            throw new InvalidTranslationException($e->getMessage(), $e->getCode(), $e);
+            throw new InvalidTranslationException('Yandex: ' . $e->getMessage(), $e->getCode(), $e);
         }
     }
 }

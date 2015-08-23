@@ -135,7 +135,11 @@ class Translator implements TranslatorInterface
             $body = (string) $e->getResponse()->getBody();
             $error = json_decode($body, true);
 
-            throw new InvalidTranslationException($error['error_description'], $e->getResponse()->getStatusCode(), $e);
+            throw new InvalidTranslationException(
+                'Microsoft: ' . $error['error_description'],
+                $e->getResponse()->getStatusCode(),
+                $e
+            );
         }
     }
 }

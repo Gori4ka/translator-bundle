@@ -58,7 +58,7 @@ class Translator implements TranslatorInterface
             $body = $e->getResponse()->getBody();
             $error = json_decode($body, true)['error'];
 
-            throw new InvalidTranslationException($error['message'], $error['code'], $e);
+            throw new InvalidTranslationException('Google: ' . $error['message'], $error['code'], $e);
         }
     }
 }
