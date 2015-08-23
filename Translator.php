@@ -3,9 +3,8 @@
 namespace Develoid\TranslatorBundle;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Develoid\TranslatorBundle\Model\TranslatorInterface;
 
-class Translator implements TranslatorInterface
+class Translator
 {
     /**
      * @var TranslatorInterface
