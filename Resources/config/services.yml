@@ -1,16 +1,9 @@
+parameters:
+    develoid_translator_google_translator_class: Develoid\TranslatorBundle\Google\Translator
+    develoid_translator_yandex_translator_class: Develoid\TranslatorBundle\Yandex\Translator
+    develoid_translator_microsoft_translator_class: Develoid\TranslatorBundle\Microsoft\Translator
+
 services:
     develoid_translator.default_translator:
         class: Develoid\TranslatorBundle\Translator
         arguments: [ @service_container, %develoid_translator.default% ]
-
-    develoid_translator.google_translator:
-        class: Develoid\TranslatorBundle\Google\Translator
-        arguments: [ %develoid_translator.google_api_key% ]
-
-    develoid_translator.yandex_translator:
-        class: Develoid\TranslatorBundle\Yandex\Translator
-        arguments: [ %develoid_translator.yandex_api_key% ]
-
-    develoid_translator.microsoft_translator:
-        class: Develoid\TranslatorBundle\Microsoft\Translator
-        arguments: [ %develoid_translator.microsoft_client_id%, %develoid_translator.microsoft_client_secret% ]
