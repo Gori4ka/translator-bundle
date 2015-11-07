@@ -1,5 +1,6 @@
 {
   "name": "develoid/translator-bundle",
+  "description": "Translator bundle for symfony2 - Translate any text via google, microsoft, yandex translate api",
   "license": "MIT",
   "type": "symfony-bundle",
   "keywords": ["google translator", "microsoft translator", "yandex translator"],
