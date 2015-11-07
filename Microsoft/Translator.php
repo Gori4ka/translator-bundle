@@ -32,6 +32,11 @@ class Translator implements TranslatorInterface
     /**
      * @var string
      */
+    private $detectEndpoint = 'http://api.microsofttranslator.com/v2/Http.svc/Detect?text=%s';
+
+    /**
+     * @var string
+     */
     private $grantType = 'client_credentials';
 
     /**
@@ -80,6 +85,21 @@ class Translator implements TranslatorInterface
         }
 
         return $response[0];
+    }
+
+    /**
+     * Detects the language of the specified text.
+     * @param string $text The text to detect the language for.
+     * @return string
+     */
+    public function detect($text)
+    {
+        $text = urlencode($text);
+        $url = sprintf($this->detectEndpoint, $text);
+        $response = $this->getResponse($url);
+        $response = simplexml_load_string($response);
+
+        return $response;
     }
 
     /**

@@ -39,4 +39,21 @@ class Translator implements TranslatorInterface
             throw new InvalidTranslationException('Yandex: ' . $e->getMessage(), $e->getCode(), $e);
         }
     }
+
+    /**
+     * Detects the language of the specified text.
+     * @param string $text The text to detect the language for.
+     * @return string
+     * @throws InvalidTranslationException
+     */
+    public function detect($text)
+    {
+        try {
+            $translation = $this->translator->detect($text);
+
+            return (string) $translation;
+        } catch (\Exception $e) {
+            throw new InvalidTranslationException('Yandex: ' . $e->getMessage(), $e->getCode(), $e);
+        }
+    }
 }

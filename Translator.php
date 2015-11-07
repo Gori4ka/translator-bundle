@@ -32,4 +32,14 @@ class Translator implements TranslatorInterface
     {
         return $this->translator->translate($text, $source, $target, $all);
     }
+
+    /**
+     * Detects the language of the specified text.
+     * @param string $text The text to detect the language for.
+     * @return string
+     */
+    public function detect($text)
+    {
+        return $this->translator->detect($text);
+    }
 }
