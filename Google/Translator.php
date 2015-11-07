@@ -17,7 +17,12 @@ class Translator implements TranslatorInterface
     /**
      * @var string
      */
-    private $endpoint = 'https://www.googleapis.com/language/translate/v2?key=%s&q=%s&source=%s&target=%s';
+    private $translateEndpoint = 'https://www.googleapis.com/language/translate/v2?key=%s&q=%s&source=%s&target=%s';
+
+    /**
+     * @var string
+     */
+    private $detectEndpoint = 'https://www.googleapis.com/language/translate/v2/detect?key=%s&q=%s';
 
     /**
      * @var Client
@@ -45,7 +50,7 @@ class Translator implements TranslatorInterface
     {
         try {
             $text = urlencode($text);
-            $url = sprintf($this->endpoint, $this->apiKey, $text, $source, $target);
+            $url = sprintf($this->translateEndpoint, $this->apiKey, $text, $source, $target);
             $response = $this->client->get($url);
             $body = (string) $response->getBody();
             $body = json_decode($body, true);
@@ -55,6 +60,29 @@ class Translator implements TranslatorInterface
             }
 
             return $body['data']['translations'][0]['translatedText'];
+        } catch (ClientException $e) {
+            $body = $e->getResponse()->getBody();
+            $error = json_decode($body, true)['error'];
+
+            throw new InvalidTranslationException('Google: ' . $error['message'], $error['code'], $e);
+        }
+    }
+
+    /**
+     * Detects the language of the specified text.
+     * @param string $text The text to detect the language for.
+     * @return string
+     */
+    public function detect($text)
+    {
+        try {
+            $text = urlencode($text);
+            $url = sprintf($this->detectEndpoint, $this->apiKey, $text);
+            $response = $this->client->get($url);
+            $body = (string) $response->getBody();
+            $body = json_decode($body, true);
+
+            return $body['data']['detections'][0][0]['language'];
         } catch (ClientException $e) {
             $body = $e->getResponse()->getBody();
             $error = json_decode($body, true)['error'];
