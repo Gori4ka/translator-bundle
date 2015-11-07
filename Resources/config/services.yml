@@ -6,4 +6,4 @@ parameters:
 services:
     develoid_translator.default_translator:
         class: Develoid\TranslatorBundle\Translator
-        arguments: [ @service_container, %develoid_translator.default% ]
+        arguments: [ "" ]

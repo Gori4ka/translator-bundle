@@ -5,6 +5,7 @@ namespace Develoid\TranslatorBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
@@ -25,8 +26,6 @@ class DeveloidTranslatorExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
-
-        $container->setParameter('develoid_translator.default', $config['default']);
 
         if (isset($config['yandex'])) {
             $this->createDefinition(
@@ -58,6 +57,11 @@ class DeveloidTranslatorExtension extends Extension
                 ])
             ;
         }
+
+        $container->getDefinition('develoid_translator.default_translator')->replaceArgument(
+            0,
+            new Reference(sprintf('develoid_translator.%s_translator', $config['default']))
+        );
     }
 
     /**

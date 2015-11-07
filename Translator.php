@@ -3,7 +3,6 @@
 namespace Develoid\TranslatorBundle;
 
 use Develoid\TranslatorBundle\Model\TranslatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Translator implements TranslatorInterface
 {
@@ -13,12 +12,11 @@ class Translator implements TranslatorInterface
     private $translator;
 
     /**
-     * @param ContainerInterface $container
-     * @param string $default
+     * @param TranslatorInterface $translator
      */
-    public function __construct(ContainerInterface $container, $default)
+    public function __construct(TranslatorInterface $translator)
     {
-        $this->translator = $container->get(sprintf('develoid_translator.%s_translator', $default));
+        $this->translator = $translator;
     }
 
     /**
