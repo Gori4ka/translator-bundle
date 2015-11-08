@@ -15,8 +15,18 @@ interface TranslatorInterface
 
     /**
      * Detects the language of the specified text.
+     *
      * @param string $text The text to detect the language for.
      * @return string
      */
     public function detect($text);
+
+    /**
+     * Get voice of text
+     *
+     * @param string $text
+     * @param string $source Source language code
+     * @return string
+     */
+    public function speak($text, $source);
 }

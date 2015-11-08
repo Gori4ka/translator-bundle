@@ -89,6 +89,7 @@ class Translator implements TranslatorInterface
 
     /**
      * Detects the language of the specified text.
+     *
      * @param string $text The text to detect the language for.
      * @return string
      */
@@ -103,14 +104,15 @@ class Translator implements TranslatorInterface
     }
 
     /**
-     * @param $text
-     * @param $language
-     * @return mixed
+     * @param string $text
+     * @param string $source
+     * @return string
+     * @throws InvalidTranslationException
      */
-    public function speak($text, $language)
+    public function speak($text, $source)
     {
         $text = urlencode($text);
-        $url = sprintf($this->speakEndpoint, $text, $language);
+        $url = sprintf($this->speakEndpoint, $text, $source);
         $response = $this->getResponse($url);
 
         return $response;

@@ -14,10 +14,14 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('develoid_translator');
-
         $rootNode->children()
             ->scalarNode('default')
                 ->defaultValue('google')
+                ->isRequired()
+                ->validate()
+                    ->ifNotInArray(['google', 'microsoft', 'yandex'])
+                    ->thenInvalid('Invalid translator type %s')
+                ->end()
             ->end()
             ->arrayNode('google')
                 ->children()

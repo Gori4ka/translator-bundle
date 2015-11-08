@@ -3,6 +3,7 @@
 namespace Develoid\TranslatorBundle\Yandex;
 
 use Develoid\TranslatorBundle\Exception\InvalidTranslationException;
+use Develoid\TranslatorBundle\Exception\UnsupportedSpeakMethodException;
 use Develoid\TranslatorBundle\Model\TranslatorInterface;
 use Yandex\Translate\Translator as YandexTranslator;
 
@@ -38,6 +39,17 @@ class Translator implements TranslatorInterface
         } catch (\Exception $e) {
             throw new InvalidTranslationException('Yandex: ' . $e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * @param string $text
+     * @param string $source
+     * @throws UnsupportedSpeakMethodException
+     * @return void
+     */
+    public function speak($text, $source)
+    {
+        throw new UnsupportedSpeakMethodException('Yandex doesn\'t support the speak method.');
     }
 
     /**

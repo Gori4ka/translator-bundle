@@ -3,6 +3,7 @@
 namespace Develoid\TranslatorBundle\Google;
 
 use Develoid\TranslatorBundle\Exception\InvalidTranslationException;
+use Develoid\TranslatorBundle\Exception\UnsupportedSpeakMethodException;
 use Develoid\TranslatorBundle\Model\TranslatorInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Client;
@@ -69,9 +70,22 @@ class Translator implements TranslatorInterface
     }
 
     /**
+     * @param string $text
+     * @param string $source
+     * @throws UnsupportedSpeakMethodException
+     * @return void
+     */
+    public function speak($text, $source)
+    {
+        throw new UnsupportedSpeakMethodException('Google doesn\'t support the speak method.');
+    }
+
+    /**
      * Detects the language of the specified text.
-     * @param string $text The text to detect the language for.
-     * @return string
+     *
+     * @param string $text
+     * @return mixed
+     * @throws InvalidTranslationException
      */
     public function detect($text)
     {
