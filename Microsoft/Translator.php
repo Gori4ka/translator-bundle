@@ -63,7 +63,7 @@ class Translator implements TranslatorInterface
         $this->client = new Client();
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
-        $this->accessToken  = $this->getToken();
+        $this->accessToken  = null;
     }
 
     /**
@@ -128,7 +128,7 @@ class Translator implements TranslatorInterface
         try {
             $response = $this->client->get($url, [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Authorization' => 'Bearer ' . $this->getToken(),
                     'Content-Type' => 'text/xml'
                 ]
             ]);
@@ -152,6 +152,10 @@ class Translator implements TranslatorInterface
      */
     private function getToken()
     {
+        if (null !== $this->accessToken) {
+            return $this->accessToken;
+        }
+
         try {
             $config = [
                 'grant_type' => $this->grantType,
@@ -166,7 +170,9 @@ class Translator implements TranslatorInterface
             $body = (string) $response->getBody();
             $body = json_decode($body, true);
 
-            return $body['access_token'];
+            $this->accessToken = $body['access_token'];
+
+            return $this->accessToken;
         } catch (ClientException $e) {
             $body = (string) $e->getResponse()->getBody();
             $error = json_decode($body, true);
