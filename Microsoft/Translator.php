@@ -27,6 +27,11 @@ class Translator implements TranslatorInterface
     /**
      * @var string
      */
+    private $translateArrayEndpoint = 'http://api.microsofttranslator.com/V2/Http.svc/TranslateArray';
+
+    /**
+     * @var string
+     */
     private $speakEndpoint = 'http://api.microsofttranslator.com/v2/Http.svc/Speak?text=%s&language=%s';
 
     /**
@@ -75,6 +80,10 @@ class Translator implements TranslatorInterface
      */
     public function translate($text, $source, $target, $all = false)
     {
+        if  (is_array($text)) {
+            return $this->translateArray($text, $source, $target);
+        }
+
         $text = urlencode($text);
         $url = sprintf($this->translateEndpoint, $text, $source, $target);
         $response = $this->getResponse($url);
@@ -85,6 +94,28 @@ class Translator implements TranslatorInterface
         }
 
         return $response[0];
+    }
+
+    /**
+     * @param $texts
+     * @param $source
+     * @param $target
+     * @return array
+     */
+    public function translateArray($texts, $source, $target)
+    {
+        $response = $this->getTranslateArrayResponse(
+            $this->translateArrayEndpoint,
+            $this->getTranslateArrayXmlRequest($texts, $source, $target)
+        );
+        $response = simplexml_load_string($response);
+
+        $result = array();
+        foreach($response->TranslateArrayResponse as $translatedArrObject){
+            $result[] = (string) $translatedArrObject->TranslatedText;
+        }
+
+        return $result;
     }
 
     /**
@@ -144,6 +175,69 @@ class Translator implements TranslatorInterface
                 $e
             );
         }
+    }
+
+    /**
+     * @param $url
+     * @param $xmlRequest
+     * @return string
+     * @throws InvalidTranslationException
+     */
+    private function getTranslateArrayResponse($url, $xmlRequest)
+    {
+        try {
+            $response = $this->client->post($url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->getToken(),
+                    'Content-Type' => 'text/xml'
+                ],
+                'body' => $xmlRequest,
+            ]);
+
+            return (string) $response->getBody();
+        } catch (ClientException $e) {
+            $body = (string) $e->getResponse()->getBody();
+
+            throw new InvalidTranslationException(
+                'Microsoft: ' . $body,
+                $e->getResponse()->getStatusCode(),
+                $e
+            );
+        }
+    }
+
+    /**
+     * @param $texts
+     * @param $source
+     * @param $target
+     * @return string
+     */
+    private function getTranslateArrayXmlRequest($texts, $source, $target)
+    {
+        $xml = new \XMLWriter();
+        $xml->openMemory();
+        $xml->startElement('TranslateArrayRequest');
+        $xml->startElement('AppId');
+        $xml->endElement(); //AppId
+        $xml->writeElement('From', $source);
+        $xml->startElement('Options');
+        $xml->startElement('ContentType');
+        $xml->writeAttribute('xmlns', 'http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2');
+        $xml->writeRaw('text/plain');
+        $xml->endElement(); //ContentType
+        $xml->endElement(); //Options
+        $xml->startElement('Texts');
+        foreach ($texts as $text) {
+            $xml->startElement('string');
+            $xml->writeAttribute('xmlns', 'http://schemas.microsoft.com/2003/10/Serialization/Arrays');
+            $xml->writeCdata($text);
+            $xml->endElement(); //string
+        }
+        $xml->endElement(); //Texts
+        $xml->writeElement('To', $target);
+        $xml->endElement(); //TranslateArrayRequest
+
+        return $xml->flush();
     }
 
     /**
