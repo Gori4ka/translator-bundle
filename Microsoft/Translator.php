@@ -60,6 +60,11 @@ class Translator implements TranslatorInterface
     private $accessToken;
 
     /**
+     * @var \DateTime
+     */
+    private $accessTokenExpirationDate;
+
+    /**
      * @param $clientId
      * @param $clientSecret
      */
@@ -69,6 +74,7 @@ class Translator implements TranslatorInterface
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
         $this->accessToken  = null;
+        $this->accessTokenExpirationDate = null;
     }
 
     /**
@@ -246,7 +252,7 @@ class Translator implements TranslatorInterface
      */
     private function getToken()
     {
-        if (null !== $this->accessToken) {
+        if (null !== $this->accessToken && false === $this->tokenIsExpired()) {
             return $this->accessToken;
         }
 
@@ -265,6 +271,8 @@ class Translator implements TranslatorInterface
             $body = json_decode($body, true);
 
             $this->accessToken = $body['access_token'];
+            $expireIn = (int) $body['expires_in'] - 30; //30s : Margin
+            $this->accessTokenExpirationDate = new \DateTime(\sprintf('now +%s seconds', $expireIn));
 
             return $this->accessToken;
         } catch (ClientException $e) {
@@ -277,5 +285,19 @@ class Translator implements TranslatorInterface
                 $e
             );
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function tokenIsExpired()
+    {
+        if (null === $this->accessTokenExpirationDate) {
+            return true;
+        }
+
+        $now = new \DateTime('now');
+
+        return ($now->getTimestamp() >= $this->accessTokenExpirationDate->getTimestamp());
     }
 }
