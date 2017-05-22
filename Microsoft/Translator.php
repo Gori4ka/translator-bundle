@@ -12,12 +12,7 @@ class Translator implements TranslatorInterface
     /**
      * @var string
      */
-    private $clientId;
-
-    /**
-     * @var string
-     */
-    private $clientSecret;
+    private $apiKey;
 
     /**
      * @var string
@@ -42,17 +37,7 @@ class Translator implements TranslatorInterface
     /**
      * @var string
      */
-    private $grantType = 'client_credentials';
-
-    /**
-     * @var string
-     */
-    private $scopeUrl = 'http://api.microsofttranslator.com';
-
-    /**
-     * @var string
-     */
-    private $authUrl = 'https://datamarket.accesscontrol.windows.net/v2/OAuth2-13/';
+    private $tokenUrl = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
 
     /**
      * @var string
@@ -65,14 +50,12 @@ class Translator implements TranslatorInterface
     private $accessTokenExpirationDate;
 
     /**
-     * @param $clientId
-     * @param $clientSecret
+     * @param $apiKey
      */
-    public function __construct($clientId, $clientSecret)
+    public function __construct($apiKey)
     {
         $this->client = new Client();
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
+        $this->apiKey = $apiKey;
         $this->accessToken  = null;
         $this->accessTokenExpirationDate = null;
     }
@@ -257,22 +240,15 @@ class Translator implements TranslatorInterface
         }
 
         try {
-            $config = [
-                'grant_type' => $this->grantType,
-                'scope' => $this->scopeUrl,
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret
-            ];
-
-            $response = $this->client->post($this->authUrl, [
-                'body' => http_build_query($config)
+            $response = $this->client->post($this->tokenUrl, [
+                'headers' =>[
+                    'Ocp-Apim-Subscription-Key' => $this->apiKey,
+                ],
             ]);
             $body = (string) $response->getBody();
-            $body = json_decode($body, true);
 
-            $this->accessToken = $body['access_token'];
-            $expireIn = (int) $body['expires_in'] - 30; //30s : Margin
-            $this->accessTokenExpirationDate = new \DateTime(\sprintf('now +%s seconds', $expireIn));
+            $this->accessToken = $body;
+            $this->accessTokenExpirationDate = new \DateTime('now +8 minutes');
 
             return $this->accessToken;
         } catch (ClientException $e) {
@@ -280,7 +256,7 @@ class Translator implements TranslatorInterface
             $error = json_decode($body, true);
 
             throw new InvalidTranslationException(
-                'Microsoft: ' . $error['error_description'],
+                'Microsoft: ' . $error['message'],
                 $e->getResponse()->getStatusCode(),
                 $e
             );
