@@ -52,8 +52,7 @@ class DeveloidTranslatorExtension extends Extension
                 $container->getParameter('develoid_translator_microsoft_translator_class'),
                 'microsoft',
                 [
-                    $config['microsoft']['client_id'],
-                    $config['microsoft']['client_secret']
+                    $config['microsoft']['api_key'],
                 ])
             ;
         }

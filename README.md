@@ -32,8 +32,7 @@ develoid_translator:
     yandex:
         api_key: %yandex_translator_api_key%
     microsoft:
-        client_id: %microsoft_translator_client_id%
-        client_secret: %microsoft_translator_client_secret%
+        api_key: %microsoft_api_key%
 ```
 
 ## Usage
